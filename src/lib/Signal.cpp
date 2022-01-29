@@ -98,8 +98,11 @@ std::string Signal::getStrGrouph() const
     for (int x = startN; x <= getLastN(); x++) oss << "-----";
     oss << "-----" << endl;
 
+    int upY = getMaxValue() < 0 ? 1 : getMaxValue() + 1;
+    int downY = getMinValue() > 0 ? -1 : getMinValue() - 1;
+
     //マイナスの値も考慮しつつ、縦線と値の大きさを出力
-    for (int y = getMaxValue() + 1; y >= getMinValue() - 1; y--)
+    for (int y = upY; y >= downY; y--)
     {
         for (int x = startN; x <= getLastN(); x++)
         {
