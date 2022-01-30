@@ -3,30 +3,44 @@
 //2つの信号
 Signal x1 = Signal();
 Signal x2 = Signal();
+int tmpInput = 0;
 
 int main()
 {
     using namespace std;
 
     //x1の信号を入力した後、グラフを出力
-    cout << "X1の信号が始まる場所を入力" << endl;
-    cin >> x1.startN;
-    cout << "X1の信号を順番に入力 (入力し終わったら\"end\"を入力)" << endl;
+    cout << "Input n where the X1 signal starts" << endl;
+    cin >> tmpInput;
+    x1.setStartN(tmpInput);
+    cout << "Input the signals of X1 in order (Input \"end\" when finished inputting)" << endl;
     inputSignal(&x1);
+
+    cout << endl;
+    cout << "X1" << endl;
     cout << x1.getStrGrouph() << endl;
+    cout << endl;
 
     //x2の信号を入力した後、グラフを出力
-    cout << "X2の信号が始まる場所を入力" << endl;
-    cin >> x2.startN;
-    cout << "X2の信号を順番に入力 (入力し終わったら\"end\"を入力)" << endl;
+    cout << "Input n where the X2 signal starts" << endl;
+    cin >> tmpInput;
+    x2.setStartN(tmpInput);
+    cout << "Input the signals of X2 in order (Input \"end\" when finished inputting)" << endl;
     inputSignal(&x2);
+    
+    cout << endl;
+    cout << "X2" << endl;
     cout << x2.getStrGrouph() << endl;
+    cout << endl;
 
     //x1 * x2の計算をした後、左右の余計な値を消し、グラフを出力
-    cout << "x1 * x2の計算結果" << endl;
     Signal result = x1 * x2;
     result.normalize();
+
+    cout << endl;
+    cout << "x1 * x2" << endl;
     cout << result.getStrGrouph() << endl;
+    cout << endl;
     
     return 0;
 }
@@ -60,7 +74,7 @@ void inputSignal(Signal* signalP)
     istringstream dataIss = istringstream(oss.str());
 
     //dataIssに格納された値をSignalに移す
-    for (int n = signalP->startN; n <= signalP->getLastN(); n++)
+    for (int n = signalP->getStartN(); n <= signalP->getLastN(); n++)
     {
         double tmpData = 0;
         dataIss >> tmpData;

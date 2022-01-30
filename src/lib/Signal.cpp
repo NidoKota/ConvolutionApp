@@ -3,15 +3,15 @@
 double Signal::getData(int n) const
 {
     //登録された信号の範囲なら、位置(n)に対する値を返す
-    if (startN <= n && n <= getLastN()) return dataArray[n - startN];
+    if (getStartN() <= n && n <= getLastN()) return dataArray[n - getStartN()];
     return 0;
 }
 
 void Signal::setData(int n, double value)
 {
     //登録された信号の範囲なら、位置(n)に値を格納する
-    int index = n - startN;
-    if (startN <= n && n <= getLastN()) dataArray[index] = value;
+    int index = n - getStartN();
+    if (getStartN() <= n && n <= getLastN()) dataArray[index] = value;
     else throw;
 }
 
@@ -28,24 +28,34 @@ void Signal::setDataArrayCount(int value)
     dataArray = new double[getDataArrayCount()];
 }
 
+int Signal::getStartN() const
+{
+    return startN;
+}
+
+void Signal::setStartN(int value)
+{
+    startN = value;
+}
+
 int Signal::getLastN() const
 {
-    return startN + getDataArrayCount() - 1;
+    return getStartN() + getDataArrayCount() - 1;
 }
 
 double Signal::getMinValue() const
 {
     //resultは信号の最初の値とし、それより小さな値を発見したら、resultを更新する
-    double result = getData(startN);
-    for (int n = startN; n <= getLastN(); n++) result = result < getData(n) ? result : getData(n);
+    double result = getData(getStartN());
+    for (int n = getStartN(); n <= getLastN(); n++) result = result < getData(n) ? result : getData(n);
     return result;
 }
 
 double Signal::getMaxValue() const
 {
     //resultは信号の最初の値とし、それより大きな値を発見したら、resultを更新する
-    double result = getData(startN);
-    for (int n = startN; n <= getLastN(); n++) result = result < getData(n) ? getData(n) : result;
+    double result = getData(getStartN());
+    for (int n = getStartN(); n <= getLastN(); n++) result = result < getData(n) ? getData(n) : result;
     return result;
 }
 
@@ -54,12 +64,12 @@ void Signal::normalize()
     //信号中、初めて0以外の値を発見した場合、このフラグを立てる
     bool firstDataPassed = false;
     //最初の0以外の値の位置(n)
-    int firstDataN = startN;
+    int firstDataN = getStartN();
     //最後の0以外の値の位置(n)
-    int lastDataN = startN;
+    int lastDataN = getStartN();
 
     //上記3つの変数に格納する値を探す
-    for(int n = startN; n <= getLastN(); n++)
+    for(int n = getStartN(); n <= getLastN(); n++)
     {
         if(getData(n) != 0) 
         {
@@ -77,9 +87,9 @@ void Signal::normalize()
     for(int n = firstDataN; n <= lastDataN; n++) tmpDataArray[n - firstDataN] = getData(n);
 
     //一時的な配列から値を戻す
-    startN = firstDataN;
+    setStartN(firstDataN);
     setDataArrayCount(lastDataN - firstDataN + 1);
-    for(int n = startN; n <= getLastN(); n++) setData(n, tmpDataArray[n - startN]);
+    for(int n = getStartN(); n <= getLastN(); n++) setData(n, tmpDataArray[n - getStartN()]);
 
     delete[] tmpDataArray;
 }
@@ -95,7 +105,7 @@ std::string Signal::getStrGrouph() const
     oss << right << fixed << setprecision(1);
 
     //横線を出力
-    for (int x = startN; x <= getLastN(); x++) oss << "-----";
+    for (int x = getStartN(); x <= getLastN(); x++) oss << "-----";
     oss << "-----" << endl;
 
     int upY = getMaxValue() < 0 ? 1 : getMaxValue() + 1;
@@ -104,7 +114,7 @@ std::string Signal::getStrGrouph() const
     //マイナスの値も考慮しつつ、縦線と値の大きさを出力
     for (int y = upY; y >= downY; y--)
     {
-        for (int x = startN; x <= getLastN(); x++)
+        for (int x = getStartN(); x <= getLastN(); x++)
         {
             if(y == 0) continue;
             
@@ -132,16 +142,16 @@ std::string Signal::getStrGrouph() const
     }
 
     //横線を出力
-    for (int x = startN; x <= getLastN(); x++) oss << "-----";
+    for (int x = getStartN(); x <= getLastN(); x++) oss << "-----";
     oss << "-----" << endl;
 
     //位置(n)を出力
-    for (int x = startN; x <= getLastN(); x++) oss << setw(hSpace) << x;
+    for (int x = getStartN(); x <= getLastN(); x++) oss << setw(hSpace) << x;
     oss << endl;
     
     //横線を出力
-    for (int x = startN; x <= getLastN(); x++) oss << "-----";
-    oss << "-----" << endl;
+    for (int x = getStartN(); x <= getLastN(); x++) oss << "-----";
+    oss << "-----";
     
     return oss.str();
 }
@@ -165,24 +175,32 @@ Signal operator*(const Signal l, const Signal r)
     }
     
     //largeの信号が、smallの信号と最初に重なる位置(n)
-    int minN = small.startN - (-large.startN);
+    int minN = small.getStartN() - (-large.getStartN());
     //largeの信号が、smallの信号と最後に重なる位置(n)
     int maxN = small.getLastN() - (-large.getLastN() + minN);
 
     //結果の信号を入れるSignalを用意
     Signal result = Signal();
-    result.startN = minN;
+    result.setStartN(minN);
     result.setDataArrayCount(maxN - minN + 1);
 
     for (int n = minN; n <= maxN; n++)
     {
         double value = 0;
-        
+
+        std::cout << "n(" << n << ") = ";
+
         //smallの信号にlargeをかけて、ループ回数を減らす
-        for (int m = small.startN; m <= small.getLastN(); m++)
+        for (int m = small.getStartN(); m <= small.getLastN(); m++)
         {
+            if(m != small.getStartN()) std::cout << " + ";
+            std::cout << small.getData(m) << "*" << large.getData(n - m);
+
             value += small.getData(m) * large.getData(n - m);
         }
+
+        std::cout << " = " << value << std::endl;
+
         result.setData(n, value);
     }
     

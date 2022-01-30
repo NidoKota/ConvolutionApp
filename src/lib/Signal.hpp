@@ -10,11 +10,10 @@ private:
     double* dataArray;
     //信号に含まれる値の数
     int dataArrayCount;
-
-public:
     //最初の値の位置(n)
     int startN;
 
+public:
     //nの位置にある値を取得
     double getData(int n) const;
     //位置(n)に値を格納
@@ -23,6 +22,10 @@ public:
     int getDataArrayCount() const;
     //信号に含まれる値の数を変更
     void setDataArrayCount(int value);
+    //最初の値の位置(n)を取得
+    int getStartN() const;
+    //最初の値の位置(n)を変更
+    void setStartN(int value);
     //最後の値の位置(n)を取得
     int getLastN() const;
     //最小の値を取得
