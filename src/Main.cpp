@@ -15,12 +15,11 @@ int main()
     cin >> tmpInput;
     x1.setStartN(tmpInput);
     cout << "Input the signals of X1 in order (Input \"end\" when finished inputting)" << endl;
-    inputSignal(&x1);
+    inputSignal(x1);
 
     cout << endl;
     cout << "X1" << endl;
     
-    //cout << x1.getStrGrouph() << endl;
     x1.draw(renderer);
     cout << endl;
 
@@ -29,11 +28,10 @@ int main()
     cin >> tmpInput;
     x2.setStartN(tmpInput);
     cout << "Input the signals of X2 in order (Input \"end\" when finished inputting)" << endl;
-    inputSignal(&x2);
+    inputSignal(x2);
     
     cout << endl;
     cout << "X2" << endl;
-    //cout << x2.getStrGrouph() << endl;
     x2.draw(renderer);
     cout << endl;
 
@@ -44,14 +42,13 @@ int main()
     cout << endl;
     cout << "x1 * x2" << endl;
 
-    //cout << result.getStrGrouph() << endl;
     result.draw(renderer);
     cout << endl;
     
     return 0;
 }
 
-void inputSignal(Signal* signalP)
+void inputSignal(Signal& signal)
 {
     using namespace std;
 
@@ -76,14 +73,14 @@ void inputSignal(Signal* signalP)
         dataCount = 1;
     }
 
-    signalP->setDataArrayCount(dataCount);
+    signal.setDataArrayCount(dataCount);
     istringstream dataIss = istringstream(oss.str());
 
     //dataIssに格納された値をSignalに移す
-    for (int n = signalP->getStartN(); n <= signalP->getLastN(); n++)
+    for (int n = signal.getStartN(); n <= signal.getLastN(); n++)
     {
         double tmpData = 0;
         dataIss >> tmpData;
-        signalP->setData(n, tmpData);
+        signal.setData(n, tmpData);
     }
 }

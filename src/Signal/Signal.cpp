@@ -1,4 +1,4 @@
-#include "Signal.hpp"
+#include "Include/Signal/Signal.hpp"
 
 bool Signal::isInRange(int n) const
 {
@@ -96,7 +96,22 @@ void Signal::normalize()
 
 void Signal::draw(Renderer& renderer)
 {
-    renderer.draw(*this);
+    Sample* sampleArray = getSampleArray();
+    renderer.draw(sampleArray, getDataArrayCount());
+    delete[] sampleArray;
+}
+
+Sample* Signal::getSampleArray() const
+{
+    Sample* result = new Sample[getDataArrayCount()];
+
+    for(int n = getStartN(); n <= getLastN(); n++)
+    {
+        result[n - getStartN()].n = n;
+        result[n - getStartN()].data = getData(n);
+    }
+
+    return result;
 }
 
 Signal operator*(const Signal l, const Signal r)
@@ -131,18 +146,8 @@ Signal operator*(const Signal l, const Signal r)
     {
         double value = 0;
 
-        std::cout << "n(" << n << ") = ";
-
         //smallの信号にlargeをかけて、ループ回数を減らす
-        for (int m = small.getStartN(); m <= small.getLastN(); m++)
-        {
-            if(m != small.getStartN()) std::cout << " + ";
-            std::cout << small.getData(m) << "*" << large.getData(n - m);
-
-            value += small.getData(m) * large.getData(n - m);
-        }
-
-        std::cout << " = " << value << std::endl;
+        for (int m = small.getStartN(); m <= small.getLastN(); m++) value += small.getData(m) * large.getData(n - m);
 
         result.setData(n, value);
     }

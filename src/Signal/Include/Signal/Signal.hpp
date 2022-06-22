@@ -1,19 +1,13 @@
-#pragma once
+#if !defined(INCLUDED_Signal_hpp)
+#define INCLUDED_Signal_hpp
 
-#include <ios>
 #include <iostream>
-#include <iomanip>
-#include <string>
-#include <sstream>
 
+#include "Sample.hpp"
 
-//離散信号を表す構造体
+//離散信号を表すクラス
 class Signal
 {
-
-public:
-    //class Sample;
-
 private:
     //信号を格納する配列
     double* dataArray;
@@ -25,16 +19,11 @@ private:
     bool isInRange(int n) const;
 
 public:
-    /*class Sample
-    {
-        int n;
-        double data;
-    };*/
-
+    //レンダラーが実装すべきインターフェース
     class Renderer
     {
         public:
-            virtual void draw(const Signal target) = 0;
+            virtual void draw(Sample* sampleArray, int sampleArrayCount) = 0;
     };
 
     //nの位置にある値を取得
@@ -57,12 +46,13 @@ public:
     double getMaxValue() const;
     //配列の外側で値が0になっている部分を消す
     void normalize();
-
-    //文字列で表現されたグラフを取得
-    std::string getStrGrouph() const;
-
+    //非圧縮なデータ構造に変換
+    Sample* getSampleArray() const;
+    //指定のレンダラーを使ってグラフを表示する
     void draw(Renderer& renderer);
 };
 
 //畳み込みの計算
 Signal operator* (const Signal l, const Signal r);
+
+#endif
