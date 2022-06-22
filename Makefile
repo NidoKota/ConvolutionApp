@@ -8,7 +8,6 @@ TARGET := $(OUTDIR)/$(PROGNAME)
 SRCDIRS := $(shell find $(SRCROOT) -type d)
 SRCS = $(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.cpp))
 OBJS := $(addprefix $(OUTDIR)/,$(patsubst %.cpp,%.o,$(SRCS)))
-#$(warning $(OBJS))
 
 CC = g++
 CFLAGS = -Wall -std=c++11 -I $(INCDIR)
@@ -16,7 +15,7 @@ CFLAGS = -Wall -std=c++11 -I $(INCDIR)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
-$(OUTDIR)/%.o:%.cpp
+$(OUTDIR)/%.o: %.cpp
 	@if [ ! -e `dirname $@` ]; then mkdir -p `dirname $@`; fi
 	$(CC) $(CFLAGS) -o $@ -c $<
 

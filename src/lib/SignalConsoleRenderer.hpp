@@ -7,7 +7,9 @@
 #include <sstream>
 
 #include "../src/lib/Signal.hpp"
-#include "../src/lib/SignalConsoleRenderer.hpp"
 
-//コマンドライン入力から信号を取得する
-void inputSignal(Signal* signalP);
+class SignalConsoleRenderer : public Signal::Renderer
+{
+public:
+    virtual void draw(const Signal target) override;
+};

@@ -3,6 +3,7 @@
 //2つの信号
 Signal x1 = Signal();
 Signal x2 = Signal();
+SignalConsoleRenderer renderer = SignalConsoleRenderer();
 int tmpInput = 0;
 
 int main()
@@ -18,7 +19,9 @@ int main()
 
     cout << endl;
     cout << "X1" << endl;
-    cout << x1.getStrGrouph() << endl;
+    
+    //cout << x1.getStrGrouph() << endl;
+    x1.draw(renderer);
     cout << endl;
 
     //x2の信号を入力した後、グラフを出力
@@ -30,7 +33,8 @@ int main()
     
     cout << endl;
     cout << "X2" << endl;
-    cout << x2.getStrGrouph() << endl;
+    //cout << x2.getStrGrouph() << endl;
+    x2.draw(renderer);
     cout << endl;
 
     //x1 * x2の計算をした後、左右の余計な値を消し、グラフを出力
@@ -39,7 +43,9 @@ int main()
 
     cout << endl;
     cout << "x1 * x2" << endl;
-    cout << result.getStrGrouph() << endl;
+
+    //cout << result.getStrGrouph() << endl;
+    result.draw(renderer);
     cout << endl;
     
     return 0;

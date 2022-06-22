@@ -1,18 +1,24 @@
 #include "Signal.hpp"
 
+bool Signal::isInRange(int n) const
+{
+    return getStartN() <= n && n <= getLastN();
+}
+
 double Signal::getData(int n) const
 {
-    //登録された信号の範囲なら、位置(n)に対する値を返す
-    if (getStartN() <= n && n <= getLastN()) return dataArray[n - getStartN()];
-    return 0;
+    if(!isInRange(n)) return 0;
+
+    //位置(n)に対する値を返す
+    return dataArray[n - getStartN()];
 }
 
 void Signal::setData(int n, double value)
 {
-    //登録された信号の範囲なら、位置(n)に値を格納する
-    int index = n - getStartN();
-    if (getStartN() <= n && n <= getLastN()) dataArray[index] = value;
-    else throw;
+    if(!isInRange(n)) assert(!"OutOfRange");
+
+    //位置(n)に値を格納する
+    dataArray[n - getStartN()] = value;
 }
 
 int Signal::getDataArrayCount() const
@@ -45,18 +51,12 @@ int Signal::getLastN() const
 
 double Signal::getMinValue() const
 {
-    //resultは信号の最初の値とし、それより小さな値を発見したら、resultを更新する
-    double result = getData(getStartN());
-    for (int n = getStartN(); n <= getLastN(); n++) result = result < getData(n) ? result : getData(n);
-    return result;
+    return *std::min_element(dataArray, dataArray + getDataArrayCount());
 }
 
 double Signal::getMaxValue() const
 {
-    //resultは信号の最初の値とし、それより大きな値を発見したら、resultを更新する
-    double result = getData(getStartN());
-    for (int n = getStartN(); n <= getLastN(); n++) result = result < getData(n) ? getData(n) : result;
-    return result;
+    return *std::max_element(dataArray, dataArray + getDataArrayCount());
 }
 
 void Signal::normalize()
@@ -94,66 +94,9 @@ void Signal::normalize()
     delete[] tmpDataArray;
 }
 
-std::string Signal::getStrGrouph() const
+void Signal::draw(Renderer& renderer)
 {
-    using namespace std;
-
-    //値同士の間にある幅
-    const int hSpace = 5;
-
-    ostringstream oss;
-    oss << right << fixed << setprecision(1);
-
-    //横線を出力
-    for (int x = getStartN(); x <= getLastN(); x++) oss << "-----";
-    oss << "-----" << endl;
-
-    int upY = getMaxValue() < 0 ? 1 : getMaxValue() + 1;
-    int downY = getMinValue() > 0 ? -1 : getMinValue() - 1;
-
-    //マイナスの値も考慮しつつ、縦線と値の大きさを出力
-    for (int y = upY; y >= downY; y--)
-    {
-        for (int x = getStartN(); x <= getLastN(); x++)
-        {
-            if(y == 0) continue;
-            
-            int intData = getData(x);
-            if(intData >= 0)
-            {
-                if(0 < y && y <= intData) oss << setw(hSpace) << "|";
-                else
-                {
-                    if (y == intData + 1) oss << setw(hSpace) << getData(x);
-                    else oss << setw(hSpace) << "";
-                }
-            }
-            else
-            {
-                if(0 > y && y >= intData) oss << setw(hSpace) << "|";
-                else
-                {
-                    if (y == intData - 1) oss << setw(hSpace) << getData(x);
-                    else oss << setw(hSpace) << "";
-                }
-            }
-        }
-        if(y != 0) oss << endl;
-    }
-
-    //横線を出力
-    for (int x = getStartN(); x <= getLastN(); x++) oss << "-----";
-    oss << "-----" << endl;
-
-    //位置(n)を出力
-    for (int x = getStartN(); x <= getLastN(); x++) oss << setw(hSpace) << x;
-    oss << endl;
-    
-    //横線を出力
-    for (int x = getStartN(); x <= getLastN(); x++) oss << "-----";
-    oss << "-----";
-    
-    return oss.str();
+    renderer.draw(*this);
 }
 
 Signal operator*(const Signal l, const Signal r)
