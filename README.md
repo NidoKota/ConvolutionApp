@@ -10,14 +10,11 @@
 <br>
 Normalize機能搭載<br>
 無駄な0が続く信号のデータ量を少なくできる<br>
+<br>
 
 # 実行結果
-<img alt="" src="readmefiles/signalmul.png"> 
-
-# コンパイル方法
-Makefileを導入した状態で`make`を実行<br>
-フォルダ内に追加されたソースファイルが自動的にコンパイルされるようになっている<br>
+<img alt="" src="Readmefiles/Signalmul.png"><br>
+<br>
 
 # ライセンス
 <a href="LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a><br>
-何か変更したい点などあればご連絡ください
